@@ -1,0 +1,145 @@
+<?php
+	// Check Signup and Create User
+	// Author: Joseph Evans
+	// Date: 
+	include('functions/isuojlib.php');
+	//include('config.php');
+	
+	$con=mysqli_connect("localhost","cyshare", "cyshare1", "cyshare");
+	// Check connection
+	if (mysqli_connect_errno())
+	{
+	  echo "Failed to connect to MySQL: " . mysqli_connect_error($con);
+	}
+	
+	// encrypt source: http://phpeasystep.com/phptu/6.html
+	ini_set("display_errors", "1");
+	
+	//Start session
+	session_start();
+	
+	//Array to store validation errors
+	$errmsg_arr = array();
+	
+	//Validation error flag
+	$errflag = false;
+	
+	$userTable=mysqli_real_escape_string($con, "userInfo"); // Table name
+
+	// username and password sent from form 
+	$myusername=	$_POST['myusername']; 
+	$mypassword=	$_POST['mypasswordhashed'];
+	$confirmpw =	 $_POST['confirmmypasswordhashed'];
+	$email =		clean($_POST['email']);
+
+	if(strlen(trim($myusername)) == 0) {
+		$errmsg_arr[] = 'Username missing.';
+		$errflag = true;
+	}
+	if(strlen(trim($mypassword)) == 0) {
+		$errmsg_arr[] = 'Password missing.';
+		$errflag = true;
+	}
+	if(strlen(trim($confirmpw)) == 0) {
+		$errmsg_arr[] = 'Password Confirmation missing.';
+		$errflag = true;
+	}
+	
+	if(strlen(trim($email)) == 0) {
+		$errmsg_arr[] = 'Email missing.';
+		$errflag = true;
+	}
+	if(!strstr($email, '@') || !strstr($email, '.') || strlen($email) < 5)
+	{
+		$errmsg_arr[] = 'Invalid email format (use email@address.com)';
+		$errflag = true;	
+	}
+	if($GLOBALS['require_isu_email'] == '1')
+	{
+		if(!strstr($email, 'iastate.edu'))
+		{
+			$errmsg_arr[] = 'The administrator has disabled signups for non-ISU students. Please use your Iowa state email to signup.';
+			$errflag = true;	
+		}
+	}
+if(strcmp($mypassword,$confirmpw) != 0)
+{
+                $errmsg_arr[] = "The supplied passwords do not match.";
+                $errflag = true;
+}
+if($errflag)
+{
+    echo 'error';
+    echo implode("\r\n", $errmsg_arr);
+}
+else
+{
+	//$SALT = generateCode();
+        
+	$myusername = clean($myusername);
+	$mypassword = clean($mypassword);
+	
+	//$securepw = encrypt($mypassword, $SALT);
+
+	// CHECK USERNAME FOR DUPLICATE
+	$checkIfUserNameExistsQuery = "SELECT userName FROM $userInfo WHERE name='$myusername'";
+	$result= $con -> query($checkIfUserNameExistsQuery);
+	if($result)
+	{
+		if($result->num_rows > 0){
+				$errmsg_arr[] = 'Username already in use';
+					$errflag = true;
+		}
+		$result->free();
+	}
+	else {
+		die("Query failed");
+	}
+	
+	// CHECK EMAIL FOR DUPLICATE
+	$checkIfEmailExistsQuery ="SELECT email FROM $userTable WHERE email='$email'";
+	$result= $con->query($checkIfEmailExistsQuery);
+	if($result)
+	{
+		if($result->num_rows > 0){
+				$errmsg_arr[] = 'The email provided is already in use.';
+					$errflag = true;
+		}
+		$result->free();
+	}
+	else {
+		die("Query failed");
+	}
+
+	//If there are input validations, redirect back to the registration form
+	if($errflag) {
+		$_SESSION['ERRMSG_ARR'] = $errmsg_arr;
+		session_write_close();
+		    echo 'error';
+		 echo implode("\r\n", $errmsg_arr);
+	}
+        
+                  if(!$errflag)
+                  {
+
+                            // create the new user in the database
+                            if($GLOBALS['auto_activate_users'] == 1)
+                            {
+                                    // Create the new user, activated
+                                    $sql = "INSERT INTO ".$userTable." (`userName`, `passwordHash`, `email`) 
+																			VALUES ('".$myusername."','".$mypassword."', '".$email."',)";
+                            }
+                            else
+                            {
+                                    // Create the new user, deactivated
+                                    $sql = "INSERT INTO ".$userTable." (`userName`, `passwordHash`, `email`) 
+																			VALUES ('".$myusername."','".$mypassword."', '".$email."',)";
+                            }
+                            $result = $con -> query($sql);
+							echo $sql;
+			
+                             echo 'successful';
+                    }
+	mysqli_close($con);
+}
+?>

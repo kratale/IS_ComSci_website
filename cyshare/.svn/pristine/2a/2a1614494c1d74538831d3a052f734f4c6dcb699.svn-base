@@ -1,0 +1,27 @@
+<html>
+<body>
+
+	<?php
+		//initialize session
+		session_start();
+		include("includes/passwords.php"); 
+		//check if visitor is logged. If user is not logged the user is redirected to login.php
+		checkLogged(); 
+	?> 
+	<h1><center>Upload A Project</center></h1>
+
+	<div class = "leftmenu">
+		<?php include("includes/sidebar.php"); ?>
+	</div>
+
+	<center>
+		<form action="file_upload.php" method="post"
+			enctype="multipart/form-data">
+			<label for="file">Filename:</label>
+			<input type="file" name="file" id="file"><br>
+			<input type="submit" name="submit" value="Submit">
+		</form>
+	</center>
+	
+</html>
+</body>

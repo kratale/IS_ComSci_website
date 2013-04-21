@@ -1,0 +1,11 @@
+<html>
+<body>
+
+	<h1><center>Welcome to CyShare</center></h1>
+
+	<div class = "leftmenu">
+		<?php include("includes/sidebar.php"); ?>
+	</div>
+
+</body>
+</html>

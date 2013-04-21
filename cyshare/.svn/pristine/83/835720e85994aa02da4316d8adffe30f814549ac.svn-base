@@ -1,0 +1,38 @@
+<?php
+
+	//Function to sanitize values received from the form. Prevents SQL injection
+	function clean($str) {
+	    
+		include('./config.php');
+	    
+		$str = @trim($str);
+		if(get_magic_quotes_gpc()) {
+			$str = stripslashes($str);
+		}
+		return mysqli_real_escape_string($connection, $str);
+	};
+	
+	// random string generator for salt codes for the given user.
+	// source:http://planetcakephp.org/aggregator/items/3118-php-random-salt-string-generator
+	function generateCode($length=32){
+	$string = "";
+	$possible = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		for($i=0;$i < $length;$i++) {
+		$char = $possible[mt_rand(0, strlen($possible)-1)];
+		$string .= $char;
+		}
+	return $string;
+	};
+
+	// encrypt the given text
+	function encrypt($text, $salt) 
+	{ 
+		return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, $text, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)))); 
+	} 
+
+	// decrypt the given text
+	function decrypt($text, $salt) 
+	{ 
+		return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($text), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))); 
+	} 
+?>

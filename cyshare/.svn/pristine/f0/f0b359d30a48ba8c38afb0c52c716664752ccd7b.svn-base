@@ -1,0 +1,36 @@
+<html>
+<body>
+
+<?php
+	
+	$g_x = 4;
+	$g_y = 2;
+	
+	function mathTest($x, $y){
+		global $g_x, $g_y;
+	
+		echo "$x * $y = ";
+		echo $x * $y;
+
+		echo "<br />$x % $y = ";
+		echo $x % $y;
+		
+		echo "<br />$g_x * $g_y = ";
+		echo $g_x * $g_y;
+
+		echo "<br />$g_x % $g_y = ";
+		echo $g_x % $g_y;
+	}
+	
+	function stringTest($str){
+		$newstr = "I LIKE " . $str . ", ESPECIALLY KOREAN ". $str;
+		echo $newstr . "<br />";
+		echo strlen($newstr);
+	}
+	
+	//mathTest(10, 5);
+	stringTest("BUTTS");
+?>
+
+</body>
+</html>

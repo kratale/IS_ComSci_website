@@ -1,0 +1,130 @@
+<?php
+// Check login - tests the login from user against the database.
+// source: http://phpeasystep.com/phptu/6.html
+	include('config.php');
+	include('functions/isuojlib.php');
+	
+	ini_set("display_errors", "1");
+	//Start session
+	session_start();
+	
+	//Array to store validation errors
+	$errmsg_arr = array();
+	
+	//Validation error flag
+	$errflag = false;
+	
+	if(isset($_POST["method"]))
+	{
+	    $autoLogin = true;
+	}
+	else
+	{
+	    $autoLogin = false;
+	}
+
+$studentTable="student_name_id"; // Table name
+
+// username and password sent from form 
+$myusername=$_POST['myusername']; 
+$mypassword=$_POST['mypasswordhashed'];
+
+// To protect MySQL injection
+$myusername = clean($myusername);
+$mypassword = clean($mypassword);
+
+//Input Validations
+$errflag = false;
+
+	if($myusername == '') {
+		$errmsg_arr[] = 'Username missing.';
+		$errflag = true;
+	}
+	if($mypassword == '') {
+		$errmsg_arr[] = 'Password missing.';
+		$errflag = true;
+	}
+	
+//If there are input validations, redirect back to the login form
+if($errflag) {
+	
+	 session_write_close();
+	header("location: index.php?login&errors=".implode($errmsg_arr));
+	//mysqli_close($connection);
+}
+
+//$sql=	 $connection->real_escape_string("SELECT * FROM ".$studentTable." WHERE name='".$myusername."'");
+$statement = mysqli_prepare($connection, "SELECT salt, password, id, nickname, email FROM ".$studentTable." WHERE name='".$myusername."'");
+
+$statement -> execute();
+$statement -> bind_result($sqlSalt, $sqlPass, $sqlId, $sqlNickname, $sqlEmail);
+//$result= $connection->query($sql);
+	
+if(!$statement)
+{
+	printf("error: %s\n", mysqli_error($connection));	
+}
+$statement->store_result();
+
+
+$count = $statement->num_rows;
+
+// If result matched $myusername and $mypassword, table row must be 1 row
+if($count == 1)
+{
+	$sqlRow = $statement->data_seek(0);		// Get the first row
+	$statement->fetch();
+	$SALT = $sqlSalt;
+	$securepw = decrypt($sqlPass, $SALT);
+	
+	if(strcmp($mypassword, $securepw) == 0)
+	{
+		session_regenerate_id();
+		
+		$_SESSION['SESS_MEMBER_ID'] = 	$sqlId;			//mysqli_result($result, 0, 'id');
+		$_SESSION['SESS_NAME'] = 		$sqlNickname;	//mysqli_result($result, 0, 'nickname');
+		$_SESSION['EMAIL'] = 			$sqlEmail;		//mysqli_result($result, 0, 'email');
+		session_write_close();
+		
+		$connection->query("update ".$studentTable." set lastlogin='".time()."' where id=".$sqlId);
+		if($autoLogin)
+		{
+		    echo 'Login successful';
+		}
+		else{
+		    header("location: ./members-index.php");
+		}
+		mysqli_close($connection);
+		return;
+	}
+	else
+	{
+		if($autoLogin)
+		{
+		    echo "Error: Incorrect username/password combination";
+		}
+		else
+		{
+		   header("location: ./index.php?login&errors=Incorrect username/password combination");
+		}
+		mysqli_close($connection);
+	}
+}
+else if($count > 1)
+{
+	if($autoLogin)
+	{
+	    echo "Error: Unknown error.";
+	}
+	else
+	{
+	    header("location: ./index.php?login&errors=ERRFAULT14: Not sure how you got here...Contact System Administrator.");
+	}
+	mysqli_close($connection);
+}
+else if($count == 0)
+{
+    mysqli_close($connection);
+    header("location: ./index.php?login&errors=Incorrect username/password combination.");
+}
+?>

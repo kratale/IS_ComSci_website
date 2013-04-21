@@ -1,0 +1,21 @@
+<?php 
+	// Config file connecting to database.
+	// 6/25/12 - Upgrading to mysqli_* 
+	$home = getcwd();
+		date_default_timezone_set("America/Chicago");	// for Central Time
+	if(strstr($home, "xampp"))
+	 {
+		 $connection = new mysqli('localhost','root','password','cyoj');    // On local connection, use local settings
+	}
+	else
+	{
+		$connection = new mysqli('localhost','cyoj','db4ACM-cyoj:ord66','cyoj');	// On server, use server settings.
+	}
+	if($connection->connect_error)
+	{
+		die('Connection Issue: '.$connection->connect_errno .' '.$connection->connect_error);
+	}
+	
+	 // include every time, as global settings may change mid-session.
+	include('functions/LoadSettings.php');
+?>

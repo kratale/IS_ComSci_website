@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Cy Online Judge Alpha</title>
+<link href="mainstyles-cyclone.css" rel="stylesheet" type="text/css" />
+<link href="css/smoothness/jquery-ui-1.8.21.custom.css" rel="stylesheet" type="text/css" />
+<link href="loginmodule.css" rel="stylesheet" type="text/css" />
+<link href="messages.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="ext/ext-all.js"></script>
+<script type="text/javascript" src="ext/src/locale/ext-lang-<your_country_code>.js"></script>
+<script type="text/javascript" src="jquery-latest.min.js"></script>
+<script type="text/javascript" src="jquery-ui.min.js"></script>
+<script type="text/javascript" src="navscript.js"></script>
+<script type="text/javascript" charset="utf-8" src="functions/jquery.ez-pinned-footer.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#loadingPageGif").hide();
+	}
+</script>
+</head>

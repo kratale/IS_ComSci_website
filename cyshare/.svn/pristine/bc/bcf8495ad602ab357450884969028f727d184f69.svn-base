@@ -1,0 +1,90 @@
+<head>
+<link href="css/mainstyles-cyclone.css" rel="stylesheet" type="text/css" />
+</head>
+
+<script language="javascript" type="text/javascript" src="functions/encode.js"></script>
+<style>
+input{
+	padding: 3px;
+}
+</style>
+<center><h1>Login</h1></center>
+
+<?php include("includes/sidebar.php"); ?>
+
+<form name="form1" method="post" action="checklogin.php">
+<table width="300" border="0" align="center" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+<tr>
+<td>
+<table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#FFFFFF">
+
+<tr>
+<td width="78">Username</td>
+<td width="6">:</td>
+<td width="294"><input name="myusername" type="text" id="myusername" onblur="unlockLoginButton();"  onkeyup="unlockLoginButton();"></td>
+</tr>
+<tr>
+<td>Password</td>
+<td>:</td>
+<td><input name="mypassword" type="password" id="mypassword" onblur="unlockLoginButton();" onkeyup="unlockLoginButton();"></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td><input id="loginButton" type="submit" name="Submit" onclick="LoginClick();" value="Login"></td>
+</tr>
+<tr>
+<td>
+</td>
+<td></td>
+<td><a href="newSignup.php">Create an Account</a></td>
+</tr>
+<tr>
+<td>
+</td>
+<td></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<input name="mypasswordhashed" type="hidden" id="mypasswordhashed">
+</form>
+
+<script type="text/javascript">
+function LoginClick()
+{
+
+	var hashPw = SHA256 ($("#mypassword").val());
+	$("#mypassword").val("");
+	$("#mypasswordhashed").val(hashPw);
+}
+	
+function unlockLoginButton()
+{
+	var username = $.trim($("#myusername").val());
+	var password = $.trim($("#mypassword").val());
+	
+	if(username.length != 0 && password.length != 0)
+	{
+		$('input[type="submit"]').removeAttr("disabled");
+	}
+	else
+	{
+		$('input[type="submit"]').attr("disabled", "disabled");
+	}
+}
+
+$(document).ready(function(){
+	$("#loginButton").button();
+			$('input[type="submit"]').attr("disabled", "disabled");
+	$("#createAccountTextLink").click(function(){
+	$("#contentPane").hide();
+	$("#contentPane").load("signup.php");
+	$("#contentPane").fadeIn(); 
+	
+ });
+
+     
+});
+</script>

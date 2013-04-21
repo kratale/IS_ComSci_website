@@ -1,0 +1,100 @@
+<?php
+	session_start();
+	$con = mysqli_connect("localhost","cyshare", "cyshare1", "cyshare");
+	
+	echo "Checking connection";
+	if (mysqli_connect_errno())
+	{
+	  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+	}
+	else echo "Connected to sql server";
+	
+	$fileTable="fileInfo"; // Table name
+	
+	$targetPath = "upload/";
+	$targetPath = $targetPath . basename( $_FILES['file']['name']); 
+	$allowedExts = array("jpg", "jpeg", "gif", "png", "zip", "7z");
+	$extension = end(explode(".", $_FILES["file"]["name"]));
+	if ((($_FILES["file"]["type"] == "image/gif")
+	|| ($_FILES["file"]["type"] == "image/jpeg")
+	|| ($_FILES["file"]["type"] == "image/png")
+	|| ($_FILES["file"]["type"] == "image/pjpeg")
+	|| ($_FILES["file"]["type"] == "application/x-zip-compressed")
+	|| ($_FILES["file"]["type"] == "application/7z"))
+	&& ($_FILES["file"]["size"] < 200000)
+	&& in_array($extension, $allowedExts))
+	  {
+	  if ($_FILES["file"]["error"] > 0)
+		{
+		echo "Return Code: " . $_FILES["file"]["error"] . "<br>";
+		}
+	  else
+		{
+		echo "Upload: " . $_FILES["file"]["name"] . "<br>";
+		echo "Type: " . $_FILES["file"]["type"] . "<br>";
+		echo "Size: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+		echo "Temp file: " . $_FILES["file"]["tmp_name"] . "<br>";
+		
+		
+		if (file_exists("upload/" . $_FILES["file"]["name"]))
+		  {
+		  echo $_FILES["file"]["name"] . " already exists. ";
+		  }
+		else
+		  {
+		  move_uploaded_file($_FILES["file"]["tmp_name"], $targetPath);
+		  echo "Stored in: " . $targetPath;
+		  
+		  $tag1;
+		  
+		  if(isset($_POST['dataStructTag']) && $_POST['dataStructTag'] == 'dataStructures') {	
+				$tag1 = "data structures";
+		  }
+		  
+		  if(isset($_POST['cPlusPlusTag']) && $_POST['cPlusPlusTag'] == 'cPlusPlus') {	
+				$tag1 = "C ++ plus plus";
+		  }
+		  
+		  if(isset($_POST['cTag']) && $_POST['cTag'] == 'c') {	
+				$tag1 = "c";
+		  }
+		  
+		  if(isset($_POST['memManTag']) && $_POST['memManTag'] == 'memoryManagement') {	
+				$tag1 = "memory management";
+		  }
+		  
+		  if(isset($_POST['cSharpTag']) && $_POST['cSharpTag'] == 'cSharp') {	
+				$tag1 = "c sharp #";
+		  }
+		  
+		  if(isset($_POST['objCTag']) && $_POST['objCTag'] == 'objectiveC') {	
+				$tag1 = "objective c";
+		  }
+		  
+		  if(isset($_POST['javaTag']) && $_POST['JavaTag'] == 'java') {	
+				$tag1 = "java";
+		  }
+		  
+		  if(isset($_POST['pythonTag']) && $_POST['pythonTag'] == 'python') {	
+				$tag1 = "python";
+		  }
+			
+			$sql = "INSERT INTO " .$fileTable." (projectName, tag1, uploader) VALUES ('".$targetPath."', '".$tag1."', '".$_SESSION['SESS_USER']."')";
+				
+			if (!mysqli_query($con,$sql))
+			{
+				die('Error: ' . mysqli_error($con));
+			}
+				
+			echo "Upload Successful: Redirecting...";
+			header("Refresh: 1; URL = http://cyshare.cs.iastate.edu/uploadPage.php");
+		  }
+		}
+	  }
+	else
+	{
+		echo "<br />".$_FILES["file"]["type"]."<br />";
+		echo "Invalid file";
+	}	  
+?>
+

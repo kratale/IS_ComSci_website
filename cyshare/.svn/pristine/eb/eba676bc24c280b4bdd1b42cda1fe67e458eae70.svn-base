@@ -1,0 +1,17 @@
+// Script for student-view nav.php
+         			
+menu_status = new Array();
+function expandSubMenu(theid){
+    if (document.getElementById) {
+    var switch_id = document.getElementById(theid);
+
+        if(menu_status[theid] != 'show') {
+           switch_id.className = 'show';
+           menu_status[theid] = 'show';
+        }else{
+           switch_id.className = 'hide';
+           menu_status[theid] = 'hide';
+        }
+    }
+}
+

@@ -1,0 +1,30 @@
+<?php
+	session_start();
+	
+	include("passwords.php");
+
+	
+	//do after login form is submitted
+	if($_POST["ac"] == "log"){
+		//check if username and password exist in $_USERS array
+		if($USERS[$_POST["username"]] == $_POST["password"]){
+			$_SESSION["logged"] = $_POST["username"];
+		}
+		else{
+			echo 'Incorrect Username or Password. Please try again';
+		};
+	};
+	
+	//checks if user is logged
+	if(array_key_exists($_SESSION["logged"], $USERS)){
+		echo 'You are logged in';
+		header('Location: ../index.php');
+	}
+	else{
+		echo '<form action="login.php" method="post"><input type="hidden" name="ac" value="log"> '; 
+		echo 'Username: <input type="text" name="username" />'; 
+		echo 'Password: <input type="password" name="password" />'; 
+		echo '<input type="submit" value="Login" />'; 
+		echo '</form>';
+	};
+?>

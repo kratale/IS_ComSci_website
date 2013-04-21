@@ -1,0 +1,15 @@
+<?php
+	$USERS["user1"] = "password1";
+	$USERS["user2"] = "password2";
+	$USERS["user3"] = "password3";
+	
+	function checkLogged(){
+		global $_SESSION, $USERS;
+		if(!array_key_exists($_SESSION["logged"], $USERS)){
+			header("Location: includes/login.php");
+		}
+		else{
+			session_destroy();
+		};
+	};
+?>

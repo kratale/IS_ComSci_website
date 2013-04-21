@@ -1,0 +1,258 @@
+<head>
+<link href="css/mainstyles-cyclone.css" rel="stylesheet" type="text/css" />
+</head>
+
+<style>
+.signupHeader
+{
+    font-weight: bold;
+    padding-top: 7px;
+    color: red;
+    text-shadow: 0px 2px 3px rgba(0,0,0,0.3);
+}  
+.signupcontainer
+{
+    padding-left: 20px;
+    
+}
+
+input{
+	padding: 3px;
+}
+</style>
+
+<center><h1>Register An Account</h1></center>
+
+<?php include("includes/sidebar.php"); ?>
+
+<script type="text/javascript" src="functions/encode.js"></script>
+<center>
+<table>
+				
+				<tr>
+								<td width="50%">
+				<div class="signupcontainer">
+				<form id="CheckSignUpForm" method="post">
+
+
+				<div class="signupHeader">Username</div>
+				<div>
+								<input name="myusername" type="text" id="myusername" onkeyup= unlockSubmitButton();"  title="Choose a username to login with.">
+								<img id="usernameimg" src=""/><span id="usernamespan"></span>
+				</div>
+
+			<div class="signupHeader">Password</div>
+								<div><input name="mypassword" type="password" id="mypassword" onkeyup="checkPass(); unlockSubmitButton(); return false;" title="There are no restrictions on password strength or length."> </div>
+
+			<div class="signupHeader">Confirm Password</div>
+								<div><input name="confirmpw" type="password" id="confirmpw" onkeyup="checkPass(); unlockSubmitButton(); return false;" title="Please confirm your password.">
+								<img id="confirmpasswordimg" src=""><span id="confirm"></span> </div>
+
+			<div class="signupHeader">Email</div>
+								<div><input name="email" type="text" id="email" unlockSubmitButton();" title="Please include your email to receive notifications.">
+										<img id="emailimg" src=""/><span id="emailspan"></span></div>
+
+										<input name="mypasswordhashed" type="hidden" id="mypasswordhashed">
+												<input name="confirmmypasswordhashed" type="hidden" id="confirmmypasswordhashed">
+												
+
+								</form>
+								<div>
+													<input type="submit" id="register" value="Sign Up" onclick="checkSignUp(); return false;">	<img id="submitimg" src=""/>
+								</div>
+				</div>
+</td>
+<td>
+
+				</td>
+				</tr>
+</center>
+</table>
+
+
+				    
+    <div id="errorsDiv" class="error" style="display: none;">
+    </div>
+				
+<script type="text/javascript">
+    
+$(document).ready(function(){
+	$("#register").button();
+
+ });
+
+function unlockSubmitButton()
+{
+				var username = $("#myusername").val();
+				var password = $("#mypassword").val();
+				var confirmpw = $("#confirmpw").val();
+				var email = $("#email").val();
+
+				if(username && password &&	confirmpw && email)
+				{
+									$("#register").fadeIn();
+				}
+				else
+				{
+								$("#register").hide();
+				}
+}
+    
+    
+/*function checkavailable(type, typeid, imgid, spanid)
+{
+	// put loading image in place incase it takes awhile...
+	$("#"+imgid).attr("src", "images/spin.gif");
+	$("#"+imgid).show();
+	var value = $("#"+typeid).val();
+       
+							if(value == "")
+											{
+															$("#"+imgid).hide();
+															$("#"+spanid).text("");
+															return;
+											}
+											
+							
+	// set up ajax request
+	var xmlhttp;
+	if (window.XMLHttpRequest)
+	{// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp=new XMLHttpRequest();
+	}
+	else
+	{// code for IE6, IE5
+	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	}
+	
+        
+	xmlhttp.open("GET","checksignupAjax.php?"+type+"="+value, true);
+	xmlhttp.send();
+	
+	// call on request received
+	xmlhttp.onreadystatechange=function()
+  {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+      //  alert(xmlhttp.responseText);
+        
+        if(xmlhttp.responseText.indexOf("error") == -1 )
+            {
+                $("#"+imgid).attr("src", "images/greencheckmark.png");
+                $("#"+spanid).text("The given "+type+" is available.");
+            }
+            else
+            {
+                 $("#"+imgid).attr("src", "images/redx.png");
+                 $("#"+spanid).text("The given "+type+" is not available.");
+            }
+        
+    }
+  }
+}*/
+        
+        
+        
+        
+    // Check the signup for the user.
+    // 1. Run the checksignup.php method (submit the user data)
+    // 2. If an error occurs,  redirect the user to the signup page with errors
+    // 3. Log in from there. (shouldnt have to error check, since the username/password has just been created)
+    function checkSignUp()
+    {			
+				//$("#submitimg").attr("src", "images/spin.gif");
+				var hashPw = SHA256(	$("#mypassword").val());
+				var hashPwConfirm = SHA256(	$("#confirmpw").val());
+
+				$("#mypasswordhashed").val(hashPw);
+				$("#confirmmypasswordhashed").val(hashPwConfirm);
+
+				$("#mypassword").val("");
+				$("#confirmpw").val("");
+
+				$("#errorsDiv").fadeOut();
+				$.post("checksignup.php", $("#CheckSignUpForm").serialize(), function(data)
+				{
+					// debugging...
+				//   $("#errorsDiv").text(data);
+					//  $("#errorsDiv").show();
+					//  return;
+
+								if(data.indexOf("error") == -1)
+								{
+											//alert("hey");
+															//$('#contentPane').load('members-index.php');
+															var username = $("#myusername").val();
+															var password = $("#mypasswordhashed").val();
+															var confirmpw = $("#confirmmypasswordhashed").val();
+																											//  alert('username: '+username+' and password: '+password)
+															$.post("checklogin.php", { "myusername" : username, "mypasswordhashed" : password, "method": "auto"}, function(logindata)
+															{
+												//alert(logindata);
+												if(logindata.indexOf("successful") != -1)
+												{
+																//$("#submitimg").attr("src", "images/greencheckmark.png");
+																window.location = "members-index.php";
+												}
+															});
+								}
+								else
+								{
+															//$("#submitimg").attr("src", "images/redx.png");
+																																	$("#errorsDiv").text(data.substr(5));
+																																	$("#errorsDiv").fadeIn();
+								}
+				});
+
+    }
+
+ function checkPass(){
+				var pass1 = document.getElementById('mypassword');
+				var pass2 = document.getElementById('confirmpw');
+				var message = document.getElementById('confirm');
+				var goodColor = "#40bf40";
+				var badColor = "#ff0000";
+				
+				if(pass1.value == "" && pass2.value == "" )
+				{
+								message.innerHTML = "";
+								pass2.style.backgroundColor = "#FFF";
+								$("#confirmpasswordimg").hide();
+				}
+				else if(pass1.value != "" && pass2.value == "")
+				{
+								message.innerHTML = "";
+								pass2.style.backgroundColor = "#FFF";
+								$("#confirmpasswordimg").hide();
+				}
+				else if(pass1.value == "" && pass2.value != "")
+				{
+								message.innerHTML = "";
+								pass2.style.backgroundColor = "#FFF";
+								$("#confirmpasswordimg").hide();
+				}
+				else if(pass1.value == pass2.value)
+				{
+								//The passwords match. 
+								//Set the color to the good color and inform
+								//the user that they have entered the correct password 
+								pass2.style.backgroundColor = goodColor;
+								message.style.color = goodColor;
+								message.innerHTML = "";
+								$("#confirmpasswordimg").attr("src", "images/greencheckmark.png")
+									$("#confirmpasswordimg").show();
+				}
+				else
+				{
+								//The passwords do not match.
+								//Set the color to the bad color and
+								//notify the user.
+								pass2.style.backgroundColor = badColor;
+								message.style.color = badColor;
+								message.innerHTML = "Passwords do not match.";
+								$("#confirmpasswordimg").attr("src", "images/redx.png")
+								$("#confirmpasswordimg").show();
+				}
+}
+</script>
+

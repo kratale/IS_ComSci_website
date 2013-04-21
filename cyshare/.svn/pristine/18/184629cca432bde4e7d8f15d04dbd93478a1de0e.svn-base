@@ -1,0 +1,18 @@
+<?php 
+$link = mysqli_connect('localhost','cyshare'); 
+if (!$link) { 
+	die('Could not connect to MySQL: ' . mysqli_error($link)); 
+} 
+echo 'Connection OK'; mysqli_close($link); 
+
+// Create database
+$sql="CREATE DATABASE my_db";
+if (mysqli_query($link,$sql))
+  {
+  echo "Database my_db created successfully";
+  }
+else
+  {
+  echo "Error creating database: " . mysqli_error($link);
+  }
+?>

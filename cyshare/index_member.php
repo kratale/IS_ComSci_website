@@ -1,0 +1,14 @@
+<?php session_start(); ?>
+
+<html>
+<head>
+<link href="css/mainstyles-cyclone.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+	<h1><center>Welcome to CyShare</center></h1>
+	
+	<?php include("includes/sidebar_member.php"); ?>
+</body>
+</html>
